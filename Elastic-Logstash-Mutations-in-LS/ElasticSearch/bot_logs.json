@@ -1,0 +1,76 @@
+{
+  "index_patterns": ["cwaf-bot-logs-*"],
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "properties": {
+      "time": {
+        "type": "date",
+        "format": "dd/MMM/yyyy:HH:mm:ss Z"
+      },
+      "action": {
+        "type": "keyword"
+      },
+      "tid": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "site": {
+        "type": "keyword"
+      },
+      "url": {
+        "type": "keyword"
+      },
+      "ip": {
+        "type": "ip"
+      },
+      "country_code": {
+        "type": "keyword"
+      },
+      "bot_category": {
+        "type": "keyword"
+      },
+      "referrer": {
+        "type": "keyword"
+      },
+      "ua": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "session_cookie": {
+        "type": "keyword"
+      },
+      "headers": {
+        "type": "text"
+      },
+      "violation_reason": {
+        "type": "keyword"
+      },
+      "policy_id": {
+        "type": "keyword"
+      },
+      "application_name": {
+        "type": "keyword"
+      },
+      "tenant_name": {
+        "type": "keyword"
+      }
+      "signature_pattern": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}
