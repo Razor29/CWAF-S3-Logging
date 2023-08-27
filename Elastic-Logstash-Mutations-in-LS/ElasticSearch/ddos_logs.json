@@ -1,0 +1,63 @@
+{
+  "index_patterns": ["cwaf-ddos-logs-*"],
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "properties": {
+      "time": {
+        "type": "date",
+        "format": "dd/MMM/yyyy:HH:mm:ss Z"
+      },
+      "destination_ip": {
+        "type": "ip"
+      },
+      "destination_port": {
+        "type": "integer"
+      },
+      "totalVolume": {
+        "type": "integer"
+      },
+      "protocol": {
+        "type": "keyword"
+      },
+      "source_ip": {
+        "type": "ip"
+      },
+      "source_port": {
+        "type": "integer"
+      },
+      "name": {
+        "type": "keyword"
+      },
+      "category": {
+        "type": "keyword"
+      },
+      "ID": {
+        "type": "keyword"
+      },
+      "action": {
+        "type": "keyword"
+      },
+      "totalPackets": {
+        "type": "integer"
+      },
+      "country_code": {
+        "type": "keyword"
+      },
+      "application_id": {
+        "type": "keyword"
+      },
+      "contractId": {
+        "type": "keyword"
+      },
+      "application_name": {
+        "type": "keyword"
+      },
+      "tenant_name": {
+        "type": "keyword"
+      }
+    }
+  }
+}
