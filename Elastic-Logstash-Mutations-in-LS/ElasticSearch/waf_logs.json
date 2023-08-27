@@ -1,0 +1,89 @@
+{
+  "index_patterns": ["cwaf-waf-logs-*"],
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "properties": {
+      "time": {
+        "type": "date",
+        "format": "dd/MMM/yyyy:HH:mm:ss Z"
+      },
+      "source_ip": {
+        "type": "ip"
+      },
+      "source_port": {
+        "type": "integer"
+      },
+      "destination_ip": {
+        "type": "ip"
+      },
+      "destination_port": {
+        "type": "integer"
+      },
+      "protocol": {
+        "type": "keyword"
+      },
+      "method": {
+        "type": "keyword"
+      },
+      "host": {
+        "type": "keyword"
+      },
+      "request": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "directory": {
+        "type": "keyword"
+      },
+      "user": {
+        "type": "keyword"
+      },
+      "severity": {
+        "type": "keyword"
+      },
+      "action": {
+        "type": "keyword"
+      },
+      "RuleID": {
+        "type": "keyword"
+      },
+      "violationCategory": {
+        "type": "keyword"
+      },
+      "violationType": {
+        "type": "keyword"
+      },
+      "role": {
+        "type": "keyword"
+      },
+      "URI": {
+        "type": "keyword"
+      },
+      "application_id": {
+        "type": "keyword"
+      },
+      "title": {
+        "type": "keyword"
+      },
+      "transId": {
+        "type": "keyword"
+      },
+      "country_code": {
+        "type": "keyword"
+      },
+      "application_name": {
+        "type": "keyword"
+      },
+      "tenant_name": {
+        "type": "keyword"
+      }
+    }
+  }
+}
