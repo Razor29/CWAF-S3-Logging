@@ -16,7 +16,15 @@ def lambda_handler(event, context):
     print(f"Bucket: {bucket_name}")
     print(f"Key: {object_key}")
 
+    # Azure Blob Storage Configuration
+    account_name = '' # enter the name of the azure storage account
+    container_name = '' # enter the name of the storage account container
+    blob_name = object_key  # or any other desired name
+    sas_token = ''  # SAS token details
+
+    # Lambda Configurations
     format = "json.gz" # Options are json.gz, ndjson and json
+    delete_original = True # Option that allows to delete or keep original file
 
     # Get the file from S3
     s3_response = s3_client.get_object(Bucket=bucket_name, Key=object_key)
@@ -32,11 +40,7 @@ def lambda_handler(event, context):
         # Decompress the JSON.gz to JSON
         file_content = gzip.decompress(file_content)
 
-    # Azure Blob Storage Configuration
-    account_name = '' # enter the name of the azure storage account
-    container_name = '' # enter the name of the storage account container
-    blob_name = object_key  # or any other desired name
-    sas_token = ''  # SAS token details
+
 
     # Create the URL with the SAS token appended
     url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}{sas_token}"
@@ -62,7 +66,13 @@ def lambda_handler(event, context):
     
     if response.status != 201:  # 201 is the expected status code for a successful blob creation
         raise Exception(f"Failed to upload blob. Status: {response.status}, Reason: {response.data.decode('utf-8')}")
+    
 
+    #Delete the original file from S3 bucket
+    if delete_original:
+        print(f"Deleting original file from S3 bucket: {bucket} with key: {key}")
+        s3_client.delete_object(Bucket=bucket, Key=key)
+        
     return {
         'statusCode': 200,
         'body': 'File transferred successfully!'
