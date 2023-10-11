@@ -4,7 +4,6 @@ import json
 import urllib.parse 
 import urllib3
 import certifi
-from azure.storage.blob import BlobServiceClient
 
 s3_client = boto3.client('s3')
 
@@ -21,8 +20,7 @@ def lambda_handler(event, context):
     account_name = '' # enter the name of the azure storage account
     container_name = '' # enter the name of the storage account container
     blob_name = object_key  # or any other desired name
-    sas_token = ''  # SAS token details (leave empty if using access key)
-    access_key = ''  # Azure Blob Storage access key (leave empty if using SAS token)
+    sas_token = ''  # SAS token details
 
     # Lambda Configurations
     format = "json.gz" # Options are json.gz, ndjson and json
@@ -42,35 +40,29 @@ def lambda_handler(event, context):
         # Decompress the JSON.gz to JSON
         file_content = gzip.decompress(file_content)
 
-    if access_key:
-        # Use Azure SDK when access key is provided
-        blob_service_client = BlobServiceClient(account_url=f"https://{account_name}.blob.core.windows.net", credential=access_key)
-        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-        blob_client.upload_blob(file_content, blob_type="BlockBlob", overwrite=True)
-    else:
-        # Use urllib3 when SAS token is provided
-        url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}{sas_token}"
+    # Use urllib3 with SAS token
+    url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}{sas_token}"
 
-        # Headers for the request
-        headers = {
-            'x-ms-blob-type': 'BlockBlob',
-            'Content-Type': 'application/json; charset=utf-8',
-            'Content-Encoding': 'gzip'
-        }
-        if format == "ndjson":
-            headers['Content-Type'] = 'application/x-ndjson'
-            headers.pop('Content-Encoding', None)  # Remove gzip encoding for ndjson
-        elif format == "json":
-            headers.pop('Content-Encoding', None)  # Remove gzip encoding for plain json
+    # Headers for the request
+    headers = {
+        'x-ms-blob-type': 'BlockBlob',
+        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Encoding': 'gzip'
+    }
+    if format == "ndjson":
+        headers['Content-Type'] = 'application/x-ndjson'
+        headers.pop('Content-Encoding', None)  # Remove gzip encoding for ndjson
+    elif format == "json":
+        headers.pop('Content-Encoding', None)  # Remove gzip encoding for plain json
 
-        # Initialize the HTTP client
-        http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
+    # Initialize the HTTP client
+    http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 
-        # Upload to Azure Blob Storage using urllib3
-        response = http.request('PUT', url, body=file_content, headers=headers)
-        
-        if response.status != 201:  # 201 is the expected status code for a successful blob creation
-            raise Exception(f"Failed to upload blob. Status: {response.status}, Reason: {response.data.decode('utf-8')}")
+    # Upload to Azure Blob Storage using urllib3
+    response = http.request('PUT', url, body=file_content, headers=headers)
+    
+    if response.status != 201:  # 201 is the expected status code for a successful blob creation
+        raise Exception(f"Failed to upload blob. Status: {response.status}, Reason: {response.data.decode('utf-8')}")
 
     # Delete the original file from S3 bucket
     if delete_original:
