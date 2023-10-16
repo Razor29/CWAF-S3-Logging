@@ -1,18 +1,17 @@
 # AWS S3 to Azure Blob Storage Transfer Lambda
 
-This AWS Lambda function transfers files from an AWS S3 bucket to Azure Blob Storage. It supports both SAS tokens and Azure Blob Storage access keys for authentication.
+This AWS Lambda function transfers files from an AWS S3 bucket to Azure Blob Storage using SAS tokens.
 
 ## Prerequisites
 
 1. AWS Lambda execution role with permissions to read from the source S3 bucket and CloudWatch Logs permissions for logging.
 2. Azure Blob Storage account and container.
-3. Either a SAS token or an access key for the Azure Blob Storage account.
-4. Azure SDK for Python included in the Lambda deployment package.
+3. SAS token for the Azure Blob Storage account.
 
 ## Setup
 
 1. Create an AWS Lambda function.
-2. Upload the Lambda deployment package which includes the function code and the Azure SDK for Python.
+2. Upload the ZIP Lambda deployment package.
 3. Set the Lambda function's handler to `lambda_function.lambda_handler` (assuming the filename is `lambda_function.py`).
 4. Increase the Lambda function timeout if your files are large. A good starting point might be 5 minutes.
 
@@ -22,8 +21,7 @@ In the Lambda function code, you need to set the following:
 
 - `account_name`: The name of your Azure Blob Storage account.
 - `container_name`: The name of your Azure Blob Storage container.
-- `sas_token`: Your SAS token (leave empty if using an access key).
-- `access_key`: Your Azure Blob Storage access key (leave empty if using a SAS token).
+- `sas_token`: Your SAS token.
 - `format`: The format of your file. Options are `json.gz`, `ndjson`, and `json`.
 - `delete_original`: Set to `True` if you want to delete the original file from the S3 bucket after transferring. Set to `False` to keep the original file.
 
