@@ -15,11 +15,11 @@ OUTPUT_FORMAT = "ndjson"  # Options: "ndjson" or "json"
 INTERNAL_DESTINATION_BUCKET = None  # If None, it'll default to the source bucket
 
 # Variables for external S3 destination
-EXTERNAL_AWS_ACCESS_KEY_ID = 'AKIA4AFXRFS3HDFPVLOE'
-EXTERNAL_AWS_SECRET_ACCESS_KEY = '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'
-EXTERNAL_BUCKET_REGION = 'us-east-1'  # Optional but recommended
-EXTERNAL_DESTINATION_BUCKET = 'sendto-other-bucket'
-EXTERNAL_PREFIX = 'logs/'  # End with a slash if specified, otherwise, keep it empty
+EXTERNAL_AWS_ACCESS_KEY_ID = ''
+EXTERNAL_AWS_SECRET_ACCESS_KEY = ''
+EXTERNAL_BUCKET_REGION = ''  # Optional but recommended
+EXTERNAL_DESTINATION_BUCKET = ''
+EXTERNAL_PREFIX = ''  # End with a slash if specified, otherwise, keep it empty
 
 if DESTINATION == "external":
     external_s3_client = boto3.client(
