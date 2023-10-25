@@ -64,14 +64,10 @@ def lambda_handler(event, context):
     # Headers for the request
     headers = {
         'x-ms-blob-type': 'BlockBlob',
-        'Content-Type': 'application/json; charset=utf-8',
-        'Content-Encoding': 'gzip'
+        'Content-Type': 'application/json; charset=utf-8'
     }
     if format == "ndjson":
         headers['Content-Type'] = 'application/x-ndjson'
-        headers.pop('Content-Encoding', None)  # Remove gzip encoding for ndjson
-    elif format == "json":
-        headers.pop('Content-Encoding', None)  # Remove gzip encoding for plain json
 
     # Initialize the HTTP client
     http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
