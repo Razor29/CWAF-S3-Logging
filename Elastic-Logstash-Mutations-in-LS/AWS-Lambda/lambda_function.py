@@ -4,7 +4,7 @@ import json
 import urllib.parse
 
 # Control where the file will be uploaded: 'internal S3' or 'external S3'
-DESTINATION = 'internal'  # Option are 'internal' or 'external' Defaulting to 'internal'
+DESTINATION = 'internal'  # Defaulting to 'internal'
 
 # Variables to control script behavior
 DELETE_ORIGINAL = True  # Set to False if you don't want to delete the original file
@@ -36,24 +36,49 @@ def lambda_handler(event, context):
     print("Lambda invoked.")
 
     # Extract bucket and file key from the event
-    source_bucket = event['Records'][0]['s3']['bucket']['name']
-    key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'])
-
+    try:
+        source_bucket = event['Records'][0]['s3']['bucket']['name']
+        key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'])
+    except KeyError:
+        print("Unexpected event structure.")
+        return {
+            'statusCode': 400,
+            'body': json.dumps('Unexpected event structure.')
+        }
+    print (f"source_bucket: {source_bucket}")
+    print (f"key: {key}")
     # Download the file and read its content
     download_path = '/tmp/{}'.format(key.split('/')[-1])
-    s3_client.download_file(source_bucket, key, download_path)
 
-    with gzip.open(download_path, 'rt') as f:
-        data = json.load(f)
+    # Downloading the file
+    try:
+        s3_client.download_file(source_bucket, key, download_path)
+    except Exception as e:
+        print(f"Error downloading file from S3: {e}")
+        return {
+            'statusCode': 500,
+            'body': json.dumps('Failed to download file from S3.')
+        }
 
-    # Transform JSON based on OUTPUT_FORMAT
-    if OUTPUT_FORMAT == "ndjson":
-        transformed_content = '\n'.join(json.dumps(item) for item in data)
-        output_extension = '.ndjson'
-    else:  # Assuming "json"
-        transformed_content = json.dumps(data)
-        output_extension = '.json'
-    print(f"Transformation to {OUTPUT_FORMAT} done.")
+    try:
+        with gzip.open(download_path, 'rt') as f:
+            data = json.load(f)
+
+        # Transform JSON based on OUTPUT_FORMAT
+        if OUTPUT_FORMAT == "ndjson":
+            transformed_content = '\n'.join(json.dumps(item) for item in data)
+            output_extension = '.ndjson'
+        else:  # Assuming "json"
+            transformed_content = json.dumps(data)
+            output_extension = '.json'
+        print(f"Transformation to {OUTPUT_FORMAT} done.")
+
+    except (gzip.BadGzipFile, json.JSONDecodeError) as e:
+        print(f"Error during file transformation: {e}")
+        return {
+            'statusCode': 500,
+            'body': json.dumps('Failed during file transformation.')
+        }
 
     # Determine the output path
     first_folder = key.split('/')[0]
@@ -108,7 +133,14 @@ def lambda_handler(event, context):
 
     # Optionally delete the original file
     if DELETE_ORIGINAL:
-        s3_client.delete_object(Bucket=source_bucket, Key=key)
+        try:
+            s3_client.delete_object(Bucket=source_bucket, Key=key)
+        except Exception as e:
+            print(f"Error deleting original file from S3: {e}")
+            return {
+                'statusCode': 500,
+                'body': json.dumps('Failed to delete original file from S3.')
+            }
 
     print("Lambda execution completed.")
 
