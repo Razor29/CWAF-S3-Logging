@@ -57,7 +57,12 @@
         "type": "keyword"
       },
       "x-forwarded-for": {
-        "type": "ip"
+        "type": "text",
+        "fields": {
+          "ip": {
+            "type": "ip"
+          }
+        }
       },
       "referrer": {
         "type": "keyword"
