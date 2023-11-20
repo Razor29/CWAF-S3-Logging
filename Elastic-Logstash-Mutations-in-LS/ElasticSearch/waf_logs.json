@@ -15,9 +15,14 @@
       },
       "source_port": {
         "type": "integer"
-      },
+      },      
       "destination_ip": {
-        "type": "ip"
+        "type": "text",
+        "fields": {
+          "ip": {
+            "type": "ip"
+          }
+        }
       },
       "destination_port": {
         "type": "integer"
