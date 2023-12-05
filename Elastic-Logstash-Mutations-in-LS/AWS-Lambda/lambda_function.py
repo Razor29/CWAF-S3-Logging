@@ -147,7 +147,7 @@ def lambda_handler(event, context):
         os.remove(download_path)
         print(f"Downloaded file {download_path} deleted.")
     except Exception as e:
-        print(f"Could not delete the downloaded file: {e}")
+        print(f"Warning: Could not delete the downloaded file: {e}")
 
     # Delete the output file
     try:
