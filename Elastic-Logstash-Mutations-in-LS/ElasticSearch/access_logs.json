@@ -11,7 +11,12 @@
         "format": "dd/MMM/yyyy:HH:mm:ss Z"
       },
       "source_ip": {
-        "type": "ip"
+        "type": "text",
+        "fields": {
+          "ip": {
+            "type": "ip"
+          }
+        }
       },
       "source_port": {
         "type": "integer"
