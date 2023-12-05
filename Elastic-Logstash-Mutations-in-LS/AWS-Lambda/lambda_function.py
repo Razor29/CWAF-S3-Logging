@@ -142,6 +142,20 @@ def lambda_handler(event, context):
                 'body': json.dumps('Failed to delete original file from S3.')
             }
 
+    # Delete the downloaded file
+    try:
+        os.remove(download_path)
+        print(f"Downloaded file {download_path} deleted.")
+    except Exception as e:
+        print(f"Could not delete the downloaded file: {e}")
+
+    # Delete the output file
+    try:
+        os.remove(output_path)
+        print(f"Output file {output_path} deleted.")
+    except Exception as e:
+        print(f"Warning: Could not delete the output file: {e}")
+
     print("Lambda execution completed.")
 
     return {
