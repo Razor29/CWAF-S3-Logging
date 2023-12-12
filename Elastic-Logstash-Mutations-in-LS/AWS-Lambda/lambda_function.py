@@ -1,6 +1,7 @@
 import boto3
 import gzip
 import json
+import os
 import urllib.parse
 
 # Control where the file will be uploaded: 'internal S3' or 'external S3'
