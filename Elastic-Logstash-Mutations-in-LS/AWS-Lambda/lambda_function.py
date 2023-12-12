@@ -3,6 +3,8 @@ import gzip
 import json
 import os
 import urllib.parse
+import shutil
+
 
 # Control where the file will be uploaded: 'internal S3' or 'external S3'
 DESTINATION = 'internal'  # Defaulting to 'internal'
@@ -31,6 +33,23 @@ if DESTINATION == "external":
     )
 
 def lambda_handler(event, context):
+    # Check if /tmp has any files or directories
+    tmp_dir = '/tmp'
+    if os.listdir(tmp_dir):  # This checks if the list is non-empty
+        print("Data found in /tmp, proceeding to delete.")
+        # Iterate through each item in /tmp and delete
+        for filename in os.listdir(tmp_dir):
+            file_path = os.path.join(tmp_dir, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(f'Failed to delete {file_path}. Reason: {e}')
+    else:
+        print("No data in /tmp. No deletion needed.")
+    
     # Internal S3 client
     s3_client = boto3.client('s3')
 
